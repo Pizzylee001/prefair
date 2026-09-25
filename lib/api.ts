@@ -2,6 +2,7 @@ export interface PreStocksToken {
   name: string;
   symbol: string;
   external_url: string;
+  contract_address: string;
   markPrice: number;
   markValuation: number;
   tokenPrice: number;
@@ -15,6 +16,7 @@ export interface TesseraToken {
   symbol: string;
   code: string;
   sector: string;
+  mint: string;
   markPrice: number;
   holders: number;
   markValuation: number;
@@ -31,6 +33,8 @@ export interface CompanyConfig {
     tesseraMarkPrice?: number;
     prestocksTokenPrice?: number;
     prestocksMarkPrice?: number;
+    prestocksMint?: string;
+    tesseraMint?: string;
   };
 }
 
@@ -41,6 +45,12 @@ export interface CompanyQuote {
   prestocksMarkValuation: number;
   prestocksTokenPrice: number | null;
   prestocksMarkPrice: number | null;
+  prestocksMint: string | null;
+  tesseraMint: string | null;
+  prestocksEffective: number;
+  tesseraEffective: number;
+  prestocksMarketPremiumPct: number | null;
+  effectiveSpreadPct: number;
   spreadPct: number;
   live: boolean;
   readAt: string;
@@ -108,6 +118,11 @@ export function computeSpread(prestocks: number, tessera: number): number {
   return ((prestocks - tessera) / tessera) * 100;
 }
 
+function marketPremium(tokenPrice: number | null | undefined, markPrice: number | null | undefined): number | null {
+  if (tokenPrice == null || markPrice == null || markPrice <= 0) return null;
+  return (tokenPrice / markPrice - 1) * 100;
+}
+
 function buildQuote(
   config: CompanyConfig,
   prestocks: PreStocksToken | undefined,
@@ -118,13 +133,26 @@ function buildQuote(
     tessera?.markValuation ?? config.fallback.tesseraMarkValuation;
   const prestocksMarkValuation =
     prestocks?.markValuation ?? config.fallback.prestocksMarkValuation;
+  const tesseraMarkPrice = tessera?.markPrice ?? config.fallback.tesseraMarkPrice ?? null;
+  const prestocksTokenPrice = prestocks?.tokenPrice ?? config.fallback.prestocksTokenPrice ?? null;
+  const prestocksMarkPrice = prestocks?.markPrice ?? config.fallback.prestocksMarkPrice ?? null;
+  const tesseraEffective = tesseraMarkValuation;
+  const prestocksEffective = prestocks
+    ? prestocks.impliedValuation
+    : config.fallback.prestocksMarkValuation;
   return {
     config,
     tesseraMarkValuation,
-    tesseraMarkPrice: tessera?.markPrice ?? config.fallback.tesseraMarkPrice ?? null,
+    tesseraMarkPrice,
     prestocksMarkValuation,
-    prestocksTokenPrice: prestocks?.tokenPrice ?? config.fallback.prestocksTokenPrice ?? null,
-    prestocksMarkPrice: prestocks?.markPrice ?? config.fallback.prestocksMarkPrice ?? null,
+    prestocksTokenPrice,
+    prestocksMarkPrice,
+    prestocksMint: prestocks?.contract_address ?? config.fallback.prestocksMint ?? null,
+    tesseraMint: tessera?.mint ?? config.fallback.tesseraMint ?? null,
+    prestocksEffective,
+    tesseraEffective,
+    prestocksMarketPremiumPct: marketPremium(prestocksTokenPrice, prestocksMarkPrice),
+    effectiveSpreadPct: computeSpread(prestocksEffective, tesseraEffective),
     spreadPct: computeSpread(prestocksMarkValuation, tesseraMarkValuation),
     live,
     readAt: new Date().toISOString(),

@@ -29,3 +29,7 @@ export function formatTokenPrice(value: number): string {
     maximumFractionDigits: 2,
   });
 }
+
+export function formatUsd(value: number): string {
+  return `$${Math.round(value).toLocaleString("en-US")}`;
+}

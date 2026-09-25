@@ -1,7 +1,9 @@
 export function IsoScene({
+  company,
   lowValue,
   highValue,
 }: {
+  company: string;
   lowValue: string;
   highValue: string;
 }) {
@@ -10,7 +12,7 @@ export function IsoScene({
       <svg
         viewBox="0 0 300 360"
         role="img"
-        aria-label={`Isometric chart: SpaceX marked at ${lowValue} by Tessera and ${highValue} by PreStocks, the two bars drawn to scale`}
+        aria-label={`Isometric chart: ${company} marked at ${lowValue} by Tessera and ${highValue} by PreStocks, the two bars drawn to scale`}
         className="block h-auto w-full"
       >
         <g opacity="0.5">

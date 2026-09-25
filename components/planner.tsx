@@ -4,31 +4,55 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { CompanyQuote } from "@/lib/api";
 import { venueUrl } from "@/lib/api";
-import { formatMoney, formatSpread, formatValuation } from "@/lib/format";
+import { formatUsd, formatValuation } from "@/lib/format";
 
 const CAVEAT =
   "Not arbitrage. One token is SPV exposure, one is loan participation, with different legal claims and exit terms. Read the gap as a pricing signal, not free money.";
 
 export function Planner({ quote }: { quote: CompanyQuote }) {
+  const defaultExitB = Math.round(
+    (quote.prestocksEffective + quote.tesseraEffective) / 2 / 1_000_000_000
+  );
   const [amount, setAmount] = useState("1000");
+  const [exitB, setExitB] = useState(String(defaultExitB));
   const [venue, setVenue] = useState<"tessera" | "prestocks">("tessera");
 
   const parsed = Number(amount.replace(/[^0-9.]/g, ""));
   const amt = Number.isFinite(parsed) && parsed > 0 ? parsed : 1000;
+  const exitParsed = Number(exitB.replace(/[^0-9.]/g, ""));
+  const assumedExit =
+    (Number.isFinite(exitParsed) && exitParsed > 0 ? exitParsed : defaultExitB) *
+    1_000_000_000;
 
   const plan = useMemo(() => {
-    const low = quote.tesseraMarkValuation;
-    const high = quote.prestocksMarkValuation;
-    const entryValuation = venue === "tessera" ? low : high;
-    const otherValuation = venue === "tessera" ? high : low;
-    const lowerEntryPct = Math.max(0, ((high - low) / high) * 100);
-    const ratioToMatch = low > 0 ? high / low : 1;
-    const exitValuation = amt * ratioToMatch;
-    return { entryValuation, otherValuation, lowerEntryPct, ratioToMatch, exitValuation };
-  }, [quote, venue, amt]);
+    const tesseraMultiple =
+      quote.tesseraEffective > 0 ? assumedExit / quote.tesseraEffective : 0;
+    const prestocksMultiple =
+      quote.prestocksEffective > 0 ? assumedExit / quote.prestocksEffective : 0;
+    const tesseraPayoff = amt * tesseraMultiple;
+    const prestocksPayoff = amt * prestocksMultiple;
+    const lowerEntryPct =
+      quote.prestocksEffective > 0
+        ? Math.max(
+            0,
+            ((quote.prestocksEffective - quote.tesseraEffective) /
+              quote.prestocksEffective) *
+              100
+          )
+        : 0;
+    return {
+      tesseraMultiple,
+      prestocksMultiple,
+      tesseraPayoff,
+      prestocksPayoff,
+      lowerEntryPct,
+    };
+  }, [quote, assumedExit, amt]);
 
   const venueName = venue === "tessera" ? "Tessera" : "PreStocks";
-  const otherName = venue === "tessera" ? "PreStocks" : "Tessera";
+  const entryValuation =
+    venue === "tessera" ? quote.tesseraEffective : quote.prestocksEffective;
+  const tesseraBetter = plan.tesseraPayoff >= plan.prestocksPayoff;
 
   return (
     <div className="p-[26px]">
@@ -45,6 +69,22 @@ export function Planner({ quote }: { quote: CompanyQuote }) {
           className="w-full rounded-[10px] border-[1.5px] border-ink bg-surface p-[11px_12px] font-[family-name:var(--font-mono-plex)] text-[15px] text-ink focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent-ink"
         />
       </div>
+      <div className="mb-1 flex flex-col gap-[7px]">
+        <label htmlFor="exit" className="text-[12.5px] font-medium text-ink-secondary">
+          Assumed exit company valuation, in $B
+        </label>
+        <input
+          id="exit"
+          type="text"
+          inputMode="decimal"
+          value={exitB}
+          onChange={(e) => setExitB(e.target.value)}
+          className="w-full rounded-[10px] border-[1.5px] border-ink bg-surface p-[11px_12px] font-[family-name:var(--font-mono-plex)] text-[15px] text-ink focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent-ink"
+        />
+      </div>
+      <p className="mb-4 mt-0 font-[family-name:var(--font-mono-plex)] text-[10.5px] tracking-[0.02em] text-ink-tertiary">
+        Your assumption, not a forecast.
+      </p>
       <div className="mb-4 flex flex-col gap-[7px]">
         <label htmlFor="venue" className="text-[12.5px] font-medium text-ink-secondary">
           Venue to enter
@@ -55,47 +95,66 @@ export function Planner({ quote }: { quote: CompanyQuote }) {
           onChange={(e) => setVenue(e.target.value as "tessera" | "prestocks")}
           className="w-full rounded-[10px] border-[1.5px] border-ink bg-surface p-[11px_12px] font-[family-name:var(--font-mono-plex)] text-[15px] text-ink focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-accent-ink"
         >
-          <option value="tessera">Tessera, lower mark</option>
-          <option value="prestocks">PreStocks, higher mark</option>
+          <option value="tessera">Tessera, lower entry</option>
+          <option value="prestocks">PreStocks, higher entry</option>
         </select>
       </div>
       <p className="mb-4 mt-1 font-[family-name:var(--font-syne)] text-[19px] font-bold leading-[1.25] tracking-[-0.01em]">
-        Entering on <b className="hl">{venueName}</b> buys {quote.config.name} at a {Math.round(plan.lowerEntryPct)} percent lower company value than {otherName} marks it.
+        Entering on <b className="hl">{venueName}</b> buys {quote.config.name} at an effective entry of {formatValuation(entryValuation)} in company value.
       </p>
-      <div className="mb-4 grid grid-cols-2 gap-[1.5px] overflow-hidden rounded-[10px] border-[1.5px] border-ink bg-ink">
+      <div className="mb-2 grid grid-cols-2 gap-[1.5px] overflow-hidden rounded-[10px] border-[1.5px] border-ink bg-ink">
         <div className="bg-surface p-[12px_13px]">
           <div className="mb-[5px] font-[family-name:var(--font-mono-plex)] text-[10.5px] uppercase tracking-[0.05em] text-ink-tertiary">
-            {venueName} entry
+            Tessera entry
           </div>
           <div className="tnum font-[family-name:var(--font-mono-plex)] text-[15px] font-semibold">
-            {formatValuation(plan.entryValuation)}
+            {formatValuation(quote.tesseraEffective)}
           </div>
         </div>
         <div className="bg-surface p-[12px_13px]">
           <div className="mb-[5px] font-[family-name:var(--font-mono-plex)] text-[10.5px] uppercase tracking-[0.05em] text-ink-tertiary">
-            {otherName} entry
+            PreStocks entry
           </div>
           <div className="tnum font-[family-name:var(--font-mono-plex)] text-[15px] font-semibold">
-            {formatValuation(plan.otherValuation)}
+            {formatValuation(quote.prestocksEffective)}
           </div>
         </div>
         <div className="bg-surface p-[12px_13px]">
           <div className="mb-[5px] font-[family-name:var(--font-mono-plex)] text-[10.5px] uppercase tracking-[0.05em] text-ink-tertiary">
-            Ratio to match
+            Tessera multiple
           </div>
           <div className="tnum font-[family-name:var(--font-mono-plex)] text-[15px] font-semibold">
-            {plan.ratioToMatch.toFixed(2)}x
+            {plan.tesseraMultiple.toFixed(2)}x
           </div>
         </div>
         <div className="bg-surface p-[12px_13px]">
           <div className="mb-[5px] font-[family-name:var(--font-mono-plex)] text-[10.5px] uppercase tracking-[0.05em] text-ink-tertiary">
-            Hypothetical exit ({formatMoney(amt)} in)
+            PreStocks multiple
           </div>
           <div className="tnum font-[family-name:var(--font-mono-plex)] text-[15px] font-semibold">
-            {formatValuation(plan.exitValuation)}
+            {plan.prestocksMultiple.toFixed(2)}x
+          </div>
+        </div>
+        <div className="bg-surface p-[12px_13px]">
+          <div className="mb-[5px] font-[family-name:var(--font-mono-plex)] text-[10.5px] uppercase tracking-[0.05em] text-ink-tertiary">
+            Tessera payoff {!tesseraBetter ? "" : "/ better route"}
+          </div>
+          <div className={`tnum font-[family-name:var(--font-mono-plex)] text-[15px] font-semibold ${tesseraBetter ? "text-accent-ink" : ""}`}>
+            {formatUsd(plan.tesseraPayoff)}
+          </div>
+        </div>
+        <div className="bg-surface p-[12px_13px]">
+          <div className="mb-[5px] font-[family-name:var(--font-mono-plex)] text-[10.5px] uppercase tracking-[0.05em] text-ink-tertiary">
+            PreStocks payoff {tesseraBetter ? "" : "/ better route"}
+          </div>
+          <div className={`tnum font-[family-name:var(--font-mono-plex)] text-[15px] font-semibold ${!tesseraBetter ? "text-accent-ink" : ""}`}>
+            {formatUsd(plan.prestocksPayoff)}
           </div>
         </div>
       </div>
+      <p className="mb-4 mt-0 text-[12px] leading-[1.6] text-ink-tertiary">
+        This assumes each token tracks the company valuation proportionally, and ignores fees, liquidity, and the legal difference between the tokens.
+      </p>
       <Link
         href={venueUrl(quote, venue)}
         target="_blank"
@@ -105,7 +164,7 @@ export function Planner({ quote }: { quote: CompanyQuote }) {
         Open on {venueName}
       </Link>
       <p className="mb-0 ml-0 mt-4 border-l-4 border-accent-fill pl-[14px] text-[13px] leading-[1.6] text-ink-secondary">
-        {CAVEAT} Spread reads {formatSpread(quote.spreadPct)} on the mark valuation.
+        {CAVEAT}
       </p>
     </div>
   );

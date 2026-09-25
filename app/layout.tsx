@@ -63,7 +63,11 @@ const mono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "PreFair, cross-venue valuation desk",
+  metadataBase: new URL("https://prefair.vercel.app"),
+  title: {
+    default: "PreFair | Cross-Venue Valuation Desk",
+    template: "PreFair | %s",
+  },
   description:
     "PreFair reads two tokenized pre-IPO venues and lifts every figure to the same basis, the implied value of the whole company. Then it shows the gap and what it means for an amount you enter.",
 };

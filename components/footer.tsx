@@ -8,7 +8,7 @@ export function Footer() {
         PreFair provides economic data, not investment advice. Tokenized private-company exposure is speculative, may be illiquid, and can lose all value. Nothing here is a recommendation to buy, sell, or hold.
       </p>
       <p className="mt-[18px] font-[family-name:var(--font-mono-plex)] text-[11px] tracking-[0.02em] text-ink-tertiary">
-        PREFAIR / DIRECTION OVERLAP / SOURCES: PRESTOCKS API, TESSERA PUBLIC API / VALUES: LIVE READ OR SESSION SAMPLE
+        PREFAIR / LIVE DATA / SOURCES: PRESTOCKS API, TESSERA PUBLIC API
       </p>
     </footer>
   );
