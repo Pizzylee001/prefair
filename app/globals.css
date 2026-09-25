@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ground: #f1f2f3;
+  --color-surface: #ffffff;
+  --color-ink: #0b0e13;
+  --color-ink-secondary: #454b52;
+  --color-ink-tertiary: #6a7079;
+  --color-line: #d7dade;
+  --color-accent-fill: #eab308;
+  --color-accent-ink: #8a5a00;
+  --color-on-accent: #16130a;
+  --font-display: var(--font-syne);
+  --font-body: var(--font-manrope);
+  --font-data: var(--font-mono-plex);
+}
+
+body {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "tnum" 1;
+}
+
+.wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+
+.tnum {
+  font-feature-settings: "tnum" 1;
+}
+
+.hl {
+  background-image: linear-gradient(var(--color-accent-fill), var(--color-accent-fill));
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  padding: 0 0.1em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+::selection {
+  background: var(--color-accent-fill);
+  color: var(--color-on-accent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene-bar {
+    opacity: 0;
+    animation: scene-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .scene-bar-1 { animation-delay: 0.05s; }
+  .scene-bar-2 { animation-delay: 0.13s; }
+  .hl-wipe {
+    background-size: 0% 100%;
+    animation: hl-in 0.5s ease-out 0.2s forwards;
+  }
+}
+
+@keyframes scene-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hl-in {
+  from { background-size: 0% 100%; }
+  to { background-size: 100% 100%; }
+}

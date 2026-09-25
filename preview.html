@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PreFair, direction: Overlap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ground:#F1F2F3;
+    --surface:#FFFFFF;
+    --ink:#0B0E13;
+    --ink-2:#454B52;
+    --ink-3:#6A7079;
+    --line:#D7DADE;
+    --accent-fill:#EAB308;
+    --accent-ink:#8A5A00;
+    --on-accent:#16130A;
+    --radius:14px;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+    --sans:"Manrope",system-ui,sans-serif;
+    --display:"Syne",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  a{color:inherit}
+  .pnote{background:var(--ink);color:#fff;font-family:var(--mono);font-size:11px;text-align:center;padding:7px 12px;letter-spacing:.02em}
+  .pnote b{color:var(--accent-fill)}
+
+  .navwrap{position:sticky;top:14px;z-index:30;padding:0 22px}
+  .nav{max-width:1116px;margin:0 auto;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border:1.5px solid var(--ink);border-radius:999px;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 16px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.02em}
+  .brand svg{display:block}
+  .navlinks{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px}
+  .navlinks a{text-decoration:none;color:var(--ink-2);padding:9px 13px;border-radius:999px}
+  .navlinks a:hover{background:var(--ground);color:var(--ink)}
+  .navlinks .cta{background:var(--ink);color:#fff;border-radius:999px;padding:10px 16px;font-weight:600}
+  .navlinks .cta:hover{background:#23282F;color:#fff}
+  @media(max-width:760px){.navlinks .hide{display:none}}
+
+  .hero{display:grid;grid-template-columns:1.02fr .98fr;gap:30px;align-items:end;padding:52px 0 28px}
+  .hero .txt{padding-bottom:6px}
+  .tagline{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.04em;margin:0}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,6vw,70px);line-height:.96;letter-spacing:-.02em;margin:20px 0 0}
+  h1 .hl{background-image:linear-gradient(var(--accent-fill),var(--accent-fill));background-repeat:no-repeat;background-size:100% 100%;padding:0 .1em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .hero p.lede{font-size:16px;line-height:1.6;color:var(--ink-2);max-width:44ch;margin:20px 0 0}
+  .hero-actions{display:flex;gap:14px;align-items:center;margin-top:26px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:700;font-size:15px;padding:15px 24px;border-radius:var(--radius);background:var(--ink);color:#fff;text-decoration:none;border:1.5px solid var(--ink)}
+  .btn:hover{background:#23282F}
+  .btn:focus-visible{outline:3px solid var(--accent-ink);outline-offset:3px}
+  .btn.ghosty{background:transparent;color:var(--ink)}
+  .btn.ghosty:hover{background:#fff}
+  @media(max-width:900px){.hero{grid-template-columns:1fr;align-items:start;gap:8px}.hero .txt{padding-bottom:0}}
+
+  .scene{position:relative}
+  .scene svg{display:block;width:100%;height:auto}
+  .scene-cap{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:center;margin:2px 0 0}
+
+  section{padding:44px 0}
+  .slabel{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;margin:0 0 10px}
+  h2{font-family:var(--display);font-weight:700;font-size:clamp(24px,3.4vw,34px);line-height:1.04;letter-spacing:-.015em;margin:0 0 10px}
+  .sub{color:var(--ink-2);font-size:15px;line-height:1.6;max-width:62ch;margin:0}
+
+  .split{margin-top:28px}
+  .srow{display:grid;grid-template-columns:1fr auto auto;gap:22px;align-items:baseline;padding:24px 0}
+  .srow+.srow{border-top:1.5px solid var(--ink)}
+  .srow .co{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.6vw,28px)}
+  .srow .co small{display:block;font-family:var(--mono);font-weight:400;font-size:11px;color:var(--ink-3);margin-top:4px;letter-spacing:.02em}
+  .srow .spread{font-family:var(--mono);font-weight:600;font-size:clamp(22px,3vw,34px);color:var(--accent-ink);text-align:right}
+  .srow .vals{font-family:var(--mono);font-size:13px;color:var(--ink-2);text-align:right;min-width:150px}
+  .srow .vals b{color:var(--ink)}
+  @media(max-width:640px){.srow{grid-template-columns:1fr auto;gap:10px}.srow .vals{display:none}}
+
+  .board{margin-top:24px;border-top:3px solid var(--ink)}
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:680px}
+  thead th{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);text-align:right;padding:12px 16px;border-bottom:1.5px solid var(--ink)}
+  thead th:first-child{text-align:left}
+  tbody td{padding:16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:14px;text-align:right;white-space:nowrap}
+  tbody td:first-child{text-align:left;font-family:var(--sans);font-weight:700;font-size:15.5px}
+  tbody tr:hover td{background:var(--surface)}
+  td.spread{color:var(--accent-ink);font-weight:600}
+  .low{color:var(--ink-2)}
+  .sym{color:var(--ink-3);font-size:11px;font-family:var(--mono);margin-left:8px;font-weight:400}
+  .note{font-size:13.5px;line-height:1.6;color:var(--ink-2);max-width:70ch;margin:16px 0 0}
+
+  .detail{display:grid;grid-template-columns:1.1fr .9fr;gap:0;border:1.5px solid var(--ink);border-radius:var(--radius);overflow:hidden;margin-top:24px}
+  .dcol{padding:26px}
+  .dcol+.dcol{border-left:1.5px solid var(--ink)}
+  .dco{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px}
+  .dco h3{font-family:var(--display);font-weight:800;font-size:26px;margin:0;letter-spacing:-.01em}
+  .back{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-decoration:none}
+  .back:hover{color:var(--ink)}
+  .normrow{display:grid;grid-template-columns:120px 1fr auto;gap:14px;padding:12px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .normrow .v{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
+  .normrow .f{font-size:13px;color:var(--ink-2)}
+  .normrow .n{font-family:var(--mono);font-size:14px;font-weight:600;text-align:right}
+  .normrow.total .n{color:var(--accent-ink)}
+  .planner .field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+  .planner label{font-size:12.5px;color:var(--ink-2);font-weight:500}
+  .planner input,.planner select{font-family:var(--mono);font-size:15px;padding:11px 12px;background:var(--surface);border:1.5px solid var(--ink);border-radius:10px;color:var(--ink);width:100%}
+  .planner input:focus-visible,.planner select:focus-visible{outline:3px solid var(--accent-ink);outline-offset:2px}
+  .verdict{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.25;margin:4px 0 16px;letter-spacing:-.01em}
+  .verdict b{background-image:linear-gradient(var(--accent-fill),var(--accent-fill));background-repeat:no-repeat;background-size:100% 100%;padding:0 .12em}
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;background:var(--ink);border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;margin-bottom:16px}
+  .kv div{background:var(--surface);padding:12px 13px}
+  .kv .k{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+  .kv .x{font-family:var(--mono);font-size:15px;font-weight:600}
+  .caveat{font-size:13px;line-height:1.6;color:var(--ink-2);border-left:4px solid var(--accent-fill);padding-left:14px;margin:16px 0 0}
+  @media(max-width:860px){.detail{grid-template-columns:1fr}.dcol+.dcol{border-left:0;border-top:1.5px solid var(--ink)}}
+
+  footer{margin-top:20px;border-top:3px solid var(--ink);padding:30px 0 46px}
+  footer .stmt{font-family:var(--display);font-weight:700;font-size:clamp(22px,3vw,32px);line-height:1.1;letter-spacing:-.015em;max-width:22ch;margin:0 0 20px}
+  footer .disc{font-size:12.5px;color:var(--ink-3);max-width:76ch;line-height:1.6;margin:0}
+  footer .line{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:18px;letter-spacing:.02em}
+  ::selection{background:var(--accent-fill);color:var(--on-accent)}
+
+  @media (prefers-reduced-motion: no-preference){
+    #isoBars .bar{opacity:0;animation:rise .8s cubic-bezier(.16,1,.3,1) forwards}
+    #isoBars .bar:nth-child(1){animation-delay:.05s}
+    #isoBars .bar:nth-child(2){animation-delay:.15s}
+    #isoBars .bar:nth-child(3){animation-delay:.25s}
+    #isoBars .bar:nth-child(4){animation-delay:.35s}
+    @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  }
+</style>
+</head>
+<body>
+
+<div class="pnote">STATIC PREVIEW, direction OVERLAP, sample session values, controls not wired. <b>Not a deliverable.</b></div>
+
+<div class="navwrap">
+  <nav class="nav" aria-label="Primary">
+    <span class="brand">
+      <svg width="28" height="26" viewBox="0 0 34 30" role="img" aria-label="PreFair mark: two overlapping circles">
+        <circle cx="12" cy="15" r="10" fill="none" stroke="var(--ink)" stroke-width="3"/>
+        <circle cx="22" cy="15" r="10" fill="var(--accent-fill)" stroke="var(--ink)" stroke-width="3"/>
+      </svg>
+      PREFAIR
+    </span>
+    <span class="navlinks">
+      <a class="hide" href="#board">Board</a>
+      <a class="hide" href="#detail">Company</a>
+      <a class="hide" href="#method">Method</a>
+      <a class="cta" href="#detail">Route an amount</a>
+    </span>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="txt">
+      <p class="tagline">CROSS-VENUE VALUATION DESK</p>
+      <h1>One company. <span class="hl">Two prices.</span></h1>
+      <p class="lede">PreFair reads both token venues and lifts every figure to the same basis, the implied value of the whole company. Then it shows you the gap and what it means for an amount you enter.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#board">See the board</a>
+        <a class="btn ghosty" href="#method">How it reads</a>
+      </div>
+    </div>
+
+    <div class="scene">
+      <svg id="isoScene" viewBox="0 0 300 360" role="img" aria-label="Isometric chart: SpaceX marked at 800 billion dollars by Tessera and 1.96 trillion dollars by PreStocks, the two bars drawn to scale"></svg>
+      <p class="scene-cap">Two marks for one company, drawn to scale</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="split-h">
+    <p class="slabel" id="split-h">Route 1, the board</p>
+    <h2>The widest gaps right now</h2>
+    <p class="sub">Ranked by how far apart the two venue marks sit, as a share of the lower one. All three show the same direction, which says the gap is systematic, not three lucky finds.</p>
+    <div class="split" id="isoBars">
+      <div class="srow bar">
+        <div class="co">SpaceX<small>SPACEX / T-SPACEX</small></div>
+        <div class="vals">Tessera <b>$800B</b> &middot; PreStocks <b>$1.96T</b></div>
+        <div class="spread">+145%</div>
+      </div>
+      <div class="srow bar">
+        <div class="co">Kalshi<small>KALSHI / T-KALSHI</small></div>
+        <div class="vals">Tessera <b>$14.0B</b> &middot; PreStocks <b>$32.1B</b></div>
+        <div class="spread">+129%</div>
+      </div>
+      <div class="srow bar">
+        <div class="co">OpenAI<small>OPENAI / T-OPENAI</small></div>
+        <div class="vals">Tessera <b>$950B</b> &middot; PreStocks <b>$1.27T</b></div>
+        <div class="spread">+34%</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="board" aria-labelledby="board-h">
+    <p class="slabel" id="board-h">Route 1, the board</p>
+    <h2>Every company, both venues</h2>
+    <div class="board">
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Company</th>
+              <th scope="col">Tessera mark</th>
+              <th scope="col">PreStocks mark</th>
+              <th scope="col">Gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>SpaceX<span class="sym">SPACEX / T-SPACEX</span></td><td class="low">$800B</td><td>$1.96T</td><td class="spread">+145%</td></tr>
+            <tr><td>Kalshi<span class="sym">KALSHI / T-KALSHI</span></td><td class="low">$14.0B</td><td>$32.1B</td><td class="spread">+129%</td></tr>
+            <tr><td>OpenAI<span class="sym">OPENAI / T-OPENAI</span></td><td class="low">$950B</td><td>$1.27T</td><td class="spread">+34%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note">Both columns are the venue's own mark valuation, the same field on each side. Tessera's mark sits lower on all three companies, which points to a structural difference between the venues rather than three separate bargains.</p>
+  </section>
+
+  <section id="detail" aria-labelledby="detail-h">
+    <p class="slabel" id="detail-h">Route 2, company</p>
+    <h2>One company, opened up</h2>
+    <p class="sub">Every figure shows the field it came from, so the comparison stays honest. Then the planner turns the gap into a route for your amount.</p>
+
+    <div class="detail">
+      <div class="dcol">
+        <div class="dco"><h3>OpenAI</h3><a class="back" href="#board">Back to board</a></div>
+        <div class="normrow"><span class="v">Tessera</span><span class="f">Venue mark valuation</span><span class="n">$950B</span></div>
+        <div class="normrow"><span class="v">Tessera</span><span class="f">Mark per T-Token</span><span class="n">$812.79</span></div>
+        <div class="normrow"><span class="v">PreStocks</span><span class="f">Venue mark valuation</span><span class="n">$1.27T</span></div>
+        <div class="normrow"><span class="v">PreStocks</span><span class="f">Token market price</span><span class="n">$1,350.64</span></div>
+        <div class="normrow"><span class="v">PreStocks</span><span class="f">Token mark price</span><span class="n">$1,023.71</span></div>
+        <div class="normrow total"><span class="v">Computed</span><span class="f">Gap, same field both sides</span><span class="n">+34%</span></div>
+      </div>
+
+      <div class="dcol planner">
+        <div class="field"><label for="amt">Amount</label><input id="amt" type="text" inputmode="decimal" value="$1,000"></div>
+        <div class="field"><label for="venue">Venue to enter</label><select id="venue"><option>Tessera, lower mark</option><option>PreStocks, higher mark</option></select></div>
+        <p class="verdict">Entering on <b>Tessera</b> buys OpenAI at a 25 percent lower company value than PreStocks marks it.</p>
+        <div class="kv">
+          <div><div class="k">Tessera entry</div><div class="x">$950B</div></div>
+          <div><div class="k">PreStocks entry</div><div class="x">$1.27T</div></div>
+          <div><div class="k">Ratio to match</div><div class="x">1.34x</div></div>
+          <div><div class="k">Your assumed exit</div><div class="x">$1.50T</div></div>
+        </div>
+        <a class="btn" href="#" style="width:100%;justify-content:center">Open on Tessera</a>
+        <p class="caveat">Not arbitrage. One token is SPV exposure, one is loan participation, with different legal claims and exit terms. Read the gap as a pricing signal, not free money.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="method" style="padding-top:8px" aria-labelledby="method-h">
+    <p class="slabel" id="method-h">Method and limits</p>
+    <p class="sub" style="max-width:74ch">PreFair compares the same field on both venues, never a market price against a venue mark. PreStocks publishes a market price, a mark price, and a mark valuation, Tessera publishes only its own mark, so each figure is labeled for what it is. Entry value is the implied company valuation, so no share count is needed. Prices move and both venues can re-mark, so every figure carries its read time and the gap is a snapshot. PreFair holds no funds and connects no wallet, it reads public data and points you at the venue to act.</p>
+  </section>
+
+  <footer>
+    <div class="stmt">The gap is the product. Not advice.</div>
+    <p class="disc">PreFair provides economic data, not investment advice. Tokenized private-company exposure is speculative, may be illiquid, and can lose all value. Nothing here is a recommendation to buy, sell, or hold.</p>
+    <p class="line">PREFAIR / DIRECTION OVERLAP / SOURCES: PRESTOCKS API, TESSERA PUBLIC API / VALUES: SESSION SAMPLE, NOT LIVE</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var svg = document.getElementById('isoScene');
+  if(!svg) return;
+  var NS = 'http://www.w3.org/2000/svg';
+  var c = Math.cos(Math.PI/6), s = Math.sin(Math.PI/6);
+  var ox = 150, oy = 160;
+  function P(x,y,z){ return [ox + (x - y) * c, oy + (x + y) * s - z]; }
+  function el(name, attrs){ var n = document.createElementNS(NS, name); for(var k in attrs){ n.setAttribute(k, attrs[k]); } return n; }
+  function poly(pts, fill){
+    var d = pts.map(function(p){ return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    return el('polygon', { points: d, fill: fill, stroke: '#0B0E13', 'stroke-width': 1.5, 'stroke-linejoin': 'round' });
+  }
+  function box(g, bx, by, w, d, h, topCol, leftCol, rightCol){
+    var A=P(bx,by,0), B=P(bx+w,by,0), C=P(bx+w,by+d,0), D=P(bx,by+d,0);
+    var At=P(bx,by,h), Bt=P(bx+w,by,h), Ct=P(bx+w,by+d,h), Dt=P(bx,by+d,h);
+    g.appendChild(poly([At,Bt,Ct,Dt], topCol));
+    g.appendChild(poly([Bt,B,C,Ct], rightCol));
+    g.appendChild(poly([Dt,Ct,C,D], leftCol));
+  }
+  function label(g, x, y, z, main, sub, hi){
+    var p = P(x,y,z);
+    var t1 = el('text', { x: p[0], y: p[1], 'text-anchor':'middle', 'font-family':'IBM Plex Mono, monospace', 'font-size':13, 'font-weight':600, fill: hi ? '#8A5A00' : '#0B0E13' });
+    t1.textContent = main;
+    var t2 = el('text', { x: p[0], y: p[1]+15, 'text-anchor':'middle', 'font-family':'IBM Plex Mono, monospace', 'font-size':10, fill:'#6A7079' });
+    t2.textContent = sub;
+    g.appendChild(t1); g.appendChild(t2);
+  }
+
+  var g = el('g', {});
+  // iso floor grid on the base plane
+  var grid = el('g', { opacity: 0.5 });
+  for(var i=0;i<=4;i++){
+    var a1=P(i*46,0,0), a2=P(i*46,184,0);
+    grid.appendChild(el('line',{x1:a1[0],y1:a1[1],x2:a2[0],y2:a2[1],stroke:'#C7CBD0','stroke-width':1}));
+    var b1=P(0,i*46,0), b2=P(184,i*46,0);
+    grid.appendChild(el('line',{x1:b1[0],y1:b1[1],x2:b2[0],y2:b2[1],stroke:'#C7CBD0','stroke-width':1}));
+  }
+  g.appendChild(grid);
+
+  // Tessera bar (800B, height 74), PreStocks bar (1.96T, height 196)
+  box(g, 20, 78, 62, 62, 74,  '#F5C93B', '#EAB308', '#B48606');
+  box(g, 112, 78, 62, 62, 196, '#3A424B', '#0B0E13', '#05070A');
+
+  label(g, 51, 109, 92, '$800B', 'Tessera');
+  label(g, 143, 109, 214, '$1.96T', 'PreStocks', true);
+
+  svg.appendChild(g);
+
+  // animate the bars up from the floor
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var polys = g.querySelectorAll('polygon');
+    var boxes = [ [0,1,2], [3,4,5] ];
+    boxes.forEach(function(idx, bi){
+      idx.forEach(function(pi){
+        var p = polys[pi];
+        p.style.transformOrigin = 'center';
+        p.animate([{opacity:0},{opacity:1}], {duration: 700, delay: 80*bi, easing:'cubic-bezier(.16,1,.3,1)', fill:'both'});
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
